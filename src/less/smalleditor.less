@@ -1,0 +1,124 @@
+@se-placeholder-color: #AAA;
+
+@se-toolbar-bg: #444;
+@se-toolbar-border: #444;
+@se-toolbar-radius: 5px;
+@se-toolbar-color: #FFF;
+@se-toolbar-size: 50px;
+@se-toolbar-active-color: #60d778;
+
+// @se-toolbar-bg: #F5F5F5;
+// @se-toolbar-border: #F5F5F5;
+// @se-toolbar-radius: 5px;
+// @se-toolbar-color: #333;
+// @se-toolbar-size: 50px;
+// @se-toolbar-active-color: #60d778;
+
+
+// --------------------------------------------------
+// Toolbar
+// --------------------------------------------------
+
+.smalleditor-toolbar {
+  position: absolute;
+  visibility: hidden;
+  transition: top 0.075s ease-out, left 0.075s ease-out;
+  box-shadow: 0 0 3px @se-toolbar-bg;
+
+  .se-toolbar-inner {
+    position: relative;
+    border: 1px solid @se-toolbar-border;
+    height: @se-toolbar-size;
+    background-color: @se-toolbar-bg;
+  }
+
+  ul.se-main-toolbar {
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+    display: table-row;
+    overflow: hidden;
+
+    li.se-li {
+      display: table-cell;
+      padding: 0px;
+      margin: 0px;
+      border: 0px;
+      height: @se-toolbar-size;
+      vertical-align: middle;
+      text-align: center;
+    }
+  }
+
+}
+
+.se-button {
+  display: block;
+  border: 0px;
+  padding: 0px;
+  background-color: transparent;
+  min-width: @se-toolbar-size;
+  box-sizing: content-box;
+  outline: 0px;
+  color: @se-toolbar-color;
+  cursor: pointer;
+}
+
+.se-button--active {
+  color: @se-toolbar-active-color;
+}
+
+.smalleditor-toolbar--show {
+  visibility: visible;
+}
+
+.smalleditor-toolbar:after {
+  top: 50px;
+  border-color: @se-toolbar-border transparent transparent transparent;
+  border-width: 8px 8px 0 8px;
+  position: absolute;
+  display: block;
+  left: 50%;
+  margin-left: -8px;
+  width:0px;
+  height: 0px;
+  border-style: solid;
+  content: "";
+}
+
+.smalleditor-toolbar--bottom:after {
+  top: -8px;
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+
+// --------------------------------------------------
+// Placeholder
+// --------------------------------------------------
+
+.smalleditor-placeholder {
+  position: relative;
+  &:after {
+    content: attr(data-placeholder);
+    color: @se-placeholder-color;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+
+// --------------------------------------------------
+// Editor
+// --------------------------------------------------
+
+.smalleditor {
+  .smalleditor-content {
+    outline: none;
+  }
+  position: relative;
+}

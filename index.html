@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Small WYSIWYG editor in angular with delta save">
+    <meta name="author" content="Jaynti Kanani">
+    <title>Smalleditor</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dist/css/smalleditor.css" type="text/css" media="screen" charset="utf-8">
+    <link href="public/css/demo.css" rel="stylesheet">
+  </head>
+  <body ng-app='smalleditorDemo' ng-controller='EditorController'>
+  <a href="https://github.com/jdkanani/smalleditor"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 1" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+
+    <nav class="navbar navbar-default" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="se-navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Smalleditor</a>
+        </div>
+        <div class="collapse navbar-collapse" id="se-navbar">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Demo</a></li>
+            <li><a href="https://github.com/jdkanani/smalleditor/blob/master/README.md">Docs</a></li>
+            <li><a href="https://github.com/jdkanani/smalleditor">Github</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <ul class="nav nav-tabs" role="tablist">
+            <li ng-click="revision=null" ng-class="{active: !revision}"><a href="#">Editor Demo</a></li>
+            <li ng-show="revision" ng-class="{active: revision}"><a href="#">Revision {{ revision.revNumber }} at {{ revision.dt | date: 'yyyy-MM-dd HH:mm:ss' }}</a></li>
+          </ul>
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div class="tab-pane" ng-class="{active: !revision}" id="editordemo">
+              <div smalleditor api='api'>
+              </div>
+            </div>
+            <div class="tab-pane" ng-class="{active: revision}" id="revisiondemo">
+              <p>
+                <div ng-bind-html="revisionHTML"></div>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Revisions
+                <span class="small text-muted">
+                  (Text will be autosaved in every 10 seconds)
+                  <span class="text-info" ng-show="saving">Saving...</span>
+                </span>
+              </h3>
+            </div>
+            <div class="list-group">
+              <a href="#" ng-repeat="rev in revisions.slice().reverse() | limitTo: 10 | orderBy:revNumber" ng-click="showRevision(rev)" class="list-group-item">
+                Autosaved <span class="pull-right small"> Revision {{ rev.revNumber }} at {{ rev.dt | date:'yyyy-MM-dd HH:mm:ss' }}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer text-center">
+      <div class="container">
+        <p class="text-muted">Developed by <a href="https://twitter.com/_jdkanani">@_jdkanani</a></p>
+      </div>
+    </div>
+  </body>
+  <script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="bower_components/angular/angular.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="bower_components/angular-route/angular-route.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="src/js/smalleditor-core.js" type="text/javascript" charset="utf-8"></script>
+  <script src="src/js/smalleditor-directive.js" type="text/javascript" charset="utf-8"></script>
+  <script src="public/js/demo.js" type="text/javascript" charset="utf-8"></script>
+</html>

@@ -1,0 +1,36 @@
+{
+  "name": "smalleditor",
+  "version": "0.0.1",
+  "homepage": "http://jdkanani.github.io/smalleditor",
+  "authors": [
+    "Jaynti Kanani <jdkanani@gmail.com>"
+  ],
+  "description": "Small WYSIWYG editor in angular with delta save",
+  "keywords": [
+    "wysiwyg",
+    "medium",
+    "rich-text",
+    "editor",
+    "angular",
+    "operational-transformation",
+    "ot"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "Gruntfile.js",
+    "package.json",
+    "public",
+    "index.html",
+    "README.md"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "angular": "~1.2.23",
+    "angular-route": "~1.2.23"
+  }
+}

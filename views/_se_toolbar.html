@@ -1,0 +1,43 @@
+<div class="smalleditor">
+  <div class="smalleditor-toolbar" style="top: {{ position.top }}px; left: {{ position.left }}px" ng-class="{ 'smalleditor-toolbar--show': showToolbar, 'smalleditor-toolbar--bottom': position.below }">
+    <div class="se-toolbar-inner">
+      <ul class="se-main-toolbar">
+        <li class="se-li" ng-show="buttons.b">
+          <button type="button" ng-click="SimpleAction('bold')" class="se-button se-button--bold" ng-class="{ 'se-button--active': styles.b }">
+            <b>B</b>
+          </button>
+        </li>
+        <li class="se-li" ng-show="buttons.i">
+          <button type="button" ng-click="SimpleAction('italic')" class="se-button se-button--italic" ng-class="{ 'se-button--active': styles.i }">
+            <i>I</i>
+          </button>
+        </li>
+        <li class="se-li" ng-show="buttons.u">
+          <button type="button" ng-click="SimpleAction('underline')" class="se-button se-button--underline" ng-class="{ 'se-button--active': styles.u }">
+            <b><u>U</u></b>
+          </button>
+        </li>
+        <li class="se-li" ng-show="buttons.h1">
+          <button type="button" ng-click="SimpleAction('formatBlock', styles.h1 ? 'p' : 'h1')" class="se-button se-button--h1" ng-class="{ 'se-button--active': styles.h1 }">
+            <b>H1</b>
+          </button>
+        </li>
+        <li class="se-li" ng-show="buttons.h2">
+          <button type="button" ng-click="SimpleAction('formatBlock', styles.h2 ? 'p' : 'h2')" class="se-button se-button--h2" ng-class="{ 'se-button--active': styles.h2 }">
+            <b>H2</b>
+          </button>
+        </li>
+        <li class="se-li" ng-show="buttons.blockquote">
+          <button type="button" ng-click="SimpleAction('formatBlock', styles.blockquote ? 'p' : 'blockquote')" class="se-button se-button--blockquote" ng-class="{ 'se-button--active': styles.blockquote }">
+            <b>"</b>
+          </button>
+        </li>
+      </ul>
+    </div>
+    <div class="se-down-arrow-clip">
+      <span class="se-down-arrow"></span>
+    </div>
+  </div>
+  <div class="smalleditor-content" ng-class="{'smalleditor-placeholder': showPlaceholder}" data-placeholder="{{ placeholder }}">
+  </div>
+</div>
