@@ -111,9 +111,6 @@ smalleditor.directive('smalleditor', [
         scope.plainPaste = (attrs.plain_paste != 'false');
         scope.htmlPaste = (attrs.html_paste == 'true');
 
-        // names
-        var _usedNames = {};
-
         // block tags
         var blockTags = "p h1 h2 h3 h4 h5 h6 pre blockquote".split(' ');
         var blockSelector = blockTags.join(',');
@@ -131,11 +128,9 @@ smalleditor.directive('smalleditor', [
         // make content editable
         $content.attr('contenteditable', true);
 
-        // Generate random number and adds into `_usedNames`
+        // Generate random number
         var generateRandomName = function() {
-          var result = seUtils.generateRandomName(_usedNames);
-          _usedNames[result] = true;
-          return result;
+          return seUtils.generateRandomName();
         };
 
         // position the toolbar above or below the selected text

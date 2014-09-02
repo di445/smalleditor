@@ -20,18 +20,7 @@ smalleditor.service('SmalleditorCore', function() {
   var seUtils = this;
 
   // Generate random name
-  this.generateRandomName = function(excepts) {
-    excepts = excepts || {};
-    var result;
-    do {
-      result = Math.round(65535 * Math.random()).toString(16);
-      result = Array(4 - result.length + 1).join("0") + result;
-    } while (excepts[result]);
-    return result;
-  };
-
-  // Generate random long id
-  this.generateRevisionNumber = function() {
+  this.generateRandomName = function() {
     return Date.now().toString(36) + Math.round(1E16 * Math.random()).toString(36);
   };
 
@@ -321,7 +310,7 @@ smalleditor.service('SmalleditorCore', function() {
 
     // Return result with `rev` and `dt`
     return {
-      rev: seUtils.generateRevisionNumber(),
+      rev: seUtils.generateRandomName(),
       dt: Date.now(),
       deltas: deltas
     };
