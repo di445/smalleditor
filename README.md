@@ -42,6 +42,15 @@ bower install smalleditor
 
 ###Docs###
 
+**Buttons**
+
+Use `buttons` attribute:
+
+```html
+<div smalleditor buttons="b,i,u,h1,h2,blockquote">
+</div>
+```
+
 **Smalleditor APIs**
 
 Use `api` attribute in directive:

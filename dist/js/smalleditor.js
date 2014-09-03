@@ -92,7 +92,7 @@ smalleditor.service('SmalleditorCore', function() {
           result.push({
             type: type,
             start: start,
-            end: start + $v.text().length
+            end: start + seUtils.htmlEntities($v.text()).length
           });
         }
 
@@ -100,7 +100,7 @@ smalleditor.service('SmalleditorCore', function() {
         // Get internal markups --> Inception
         _getMarkups($v, result, start);
       }
-      start = start + $v.text().length;
+      start = start + seUtils.htmlEntities($v.text()).length;
     });
   };
 
