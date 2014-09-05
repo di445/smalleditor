@@ -44,10 +44,17 @@ bower install smalleditor
 
 **Buttons**
 
-Use `buttons` attribute:
+Add `buttons` attribute:
 
 ```html
 <div smalleditor buttons="b,i,u,h1,h2,blockquote">
+</div>
+```
+
+**Icon theme**
+
+```html
+<div smalleditor buttons="b,i,u,h1,h2,blockquote" icontheme='bootstrap'>
 </div>
 ```
 
