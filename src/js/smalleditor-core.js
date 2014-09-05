@@ -228,7 +228,8 @@ smalleditor.service('SmalleditorCore', function() {
       var t = rTagTypes[b.type];
       if (t) {
         result.push("<" + t + " name='" + b.name + "' class='se-elem se-elem--" + t + "'>");
-        result.push(_getHTMLFromMarkup(b.text, b.markups));
+        var text = _getHTMLFromMarkup(b.text, b.markups);
+        result.push(text.replace(/^\s+|\s+$/g, '').length > 0 ? text : '<br/>');
         result.push("</" + t + ">");
       }
     }
