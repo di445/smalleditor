@@ -272,6 +272,7 @@ smalleditor.service('SmalleditorCore', function() {
       }, {});
 
 
+      var removeCount = 0;
       for (var sk in spNames) {
         var svalue = spNames[sk].value,
             sindex = spNames[sk].index;
@@ -279,9 +280,10 @@ smalleditor.service('SmalleditorCore', function() {
           // If `target.paragraph` is not available with the `name` in
           // `source.paragraph` then mark paragraph as deleted
           deltas.push({
-            index: sindex,
+            index: sindex - removeCount,
             type: opTypes.DELETE
           });
+          removeCount++;
         } else if (!angular.equals(svalue, tpNames[sk].value)) {
           // If `target.paragraph` is not same as `source.paragraph` with
           // same `name`, mark paragraph as updated
