@@ -4,12 +4,12 @@
       <ul class="se-main-toolbar">
         <li class="se-li" ng-show="buttons.b">
           <button type="button" ng-click="SimpleAction('bold')" class="se-button se-button--bold" ng-class="{ 'se-button--active': styles.b }">
-            <b>B</b>
+            <span ng-class="{'glyphicon glyphicon-bold': iconTheme == 'bootstrap'}"><span ng-show='!iconTheme'><b>B</b></span></span>
           </button>
         </li>
         <li class="se-li" ng-show="buttons.i">
           <button type="button" ng-click="SimpleAction('italic')" class="se-button se-button--italic" ng-class="{ 'se-button--active': styles.i }">
-            <i>I</i>
+            <span ng-class="{'glyphicon glyphicon-italic': iconTheme == 'bootstrap'}"><span ng-show='!iconTheme'><b><i>I</i></b></span></span>
           </button>
         </li>
         <li class="se-li" ng-show="buttons.u">

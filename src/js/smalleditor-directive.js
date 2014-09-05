@@ -106,6 +106,9 @@ smalleditor.directive('smalleditor', [
         // placeholder text
         scope.placeholder = attrs.placeholder || "Type your text";
 
+        // icon theme
+        scope.iconTheme = attrs.icontheme;
+
         // Text paste
         scope.allowPaste = (attrs.paste != 'false');
         scope.plainPaste = (attrs.plain_paste != 'false');
@@ -251,22 +254,25 @@ smalleditor.directive('smalleditor', [
           }
         };
 
+        // Placeholder activate
+        var _ph_activate = function(){
+          if ($content.get(0).textContent.replace(/^\s+|\s+$/g, '') === '') {
+            scope.showPlaceholder = true;
+          }
+        };
+        // Placeholder deactivate
+        var _ph_deactivate = function(e){
+          scope.showPlaceholder = false;
+          if (!e || (e.type !== 'keypress' && e.type !== 'paste')) {
+            _ph_activate();
+          }
+        };
+
         // set placeholders for empty textarea
         var setPlaceholders = function() {
-          var activate = function () {
-            if ($content.get(0).textContent.replace(/^\s+|\s+$/g, '') === '') {
-              scope.showPlaceholder = true;
-            }
-          };
-          var deactivate = function (e) {
-            scope.showPlaceholder = false;
-            if (e.type !== 'keypress' && e.type !== 'paste') {
-              activate();
-            }
-          };
-          activate();
-          $content.on('blur.placeholder', activate)
-            .on('keypress.placeholder paste.placeholder', deactivate);
+          _ph_activate();
+          $content.on('blur.placeholder', _ph_activate)
+            .on('keypress.placeholder paste.placeholder', _ph_deactivate);
         };
 
         // Bind paste
@@ -441,6 +447,7 @@ smalleditor.directive('smalleditor', [
             return seUtils.generateModel($content);
           }
           $content.html(seUtils.generateHTMLFromModel(dataModel));
+          _ph_deactivate();
         };
 
         // Get html from data model
