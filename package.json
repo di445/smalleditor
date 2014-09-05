@@ -1,6 +1,6 @@
 {
   "name": "smalleditor",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Small WYSIWYG editor in angular with delta save",
   "main": "index.js",
   "scripts": {
