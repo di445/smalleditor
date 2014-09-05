@@ -335,10 +335,6 @@ smalleditor.service('SmalleditorCore', function() {
         sp = source.paragraphs,
         dIndex = delta.index,
         dType = delta.type;
-      if ((dType !== opTypes.CREATE && typeof sp[dIndex] == 'undefined') ||
-          (dType === opTypes.CREATE && typeof sp.length < dIndex - 1)) {
-        throw new Error("Delta is not valid for this source");
-      }
 
       if (dType === opTypes.DELETE) {
         sp.splice(dIndex, 1);
