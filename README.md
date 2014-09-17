@@ -5,6 +5,13 @@ Small WYSIWYG editor with delta save
 
 Inspired by Medium and [MediumEditor](https://github.com/daviferreira/medium-editor).
 
+Smalleditor uses model to save document - which makes autosaving, revisions and paragraph/word comments very easy to implement.
+If you are interested in its internals, read this - <https://medium.com/medium-eng/why-contenteditable-is-terrible-122d8a40e480>
+
+
+For future developement please refer TODO section.
+If you need collaborative editor - I would suggest you to use [quilljs](quilljs.com).
+
 
 ###TODO###
 - Refactor grunt setup
