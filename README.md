@@ -14,6 +14,7 @@ If you need collaborative editor - I would suggest you to use [quilljs](quilljs.
 
 
 ###TODO###
+- Remove jQuery as dependency
 - Refactor grunt setup
 - Support for more elements
 - IE/safari support
