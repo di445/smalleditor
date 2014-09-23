@@ -57,6 +57,18 @@ smalleditor.service('SmalleditorService', function() {
     }
     return spe;
   };
+
+  this.closest = function(elem, selector) {
+    var matchesSelector = elem.matches || elem.webkitMatchesSelector || elem.mozMatchesSelector || elem.msMatchesSelector;
+    while (elem) {
+      if (matchesSelector.bind(elem)(selector)) {
+        return elem;
+      } else {
+        elem = elem.parentElement;
+      }
+    }
+    return false;
+  };
 });
 
 
@@ -369,10 +381,7 @@ smalleditor.directive('smalleditor', [
               // and becomes `<p name='...' class='...'><b>example<b><p>`,
               // in that case find closest `.se-elem` add name/class attributes
               var node = seService.getSelectionStart();
-              var closest = $(node).closest('.se-elem');
-              if (closest.size() === 0) {
-                closest = $(node);
-              }
+              var closest = angular.element(seService.closest(node, '.se-elem'));
               closest.attr('name', generateRandomName()).addClass('se-elem se-elem--p');
               addedNewElem();
             }
@@ -398,11 +407,11 @@ smalleditor.directive('smalleditor', [
           document.execCommand(action, false, elem);
           if (action == 'formatBlock') {
             var node = seService.getSelectionStart();
-            var closest = $(node).closest(elem);
-            if (closest.size() === 0) {
-              closest = $(node).prev(elem);
+            var closest = seService.closest(node, elem);
+            if (!closest) {
+              closest = angular.element(node).prev(elem);
             }
-            closest.attr('name', generateRandomName()).addClass('se-elem se-elem--' + elem);
+            angular.element(closest).attr('name', generateRandomName()).addClass('se-elem se-elem--' + elem);
             removeNested();
             addedNewElem();
           }
