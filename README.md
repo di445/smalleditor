@@ -14,7 +14,7 @@ If you need collaborative editor - I would suggest you to use [quilljs](quilljs.
 
 
 ###TODO###
-- Remove jQuery as dependency
+- Remove jQuery as dependency (WIP: [different branch](https://github.com/jdkanani/smalleditor/tree/without_jquery))
 - Refactor grunt setup
 - Support for more elements
 - IE/safari support
