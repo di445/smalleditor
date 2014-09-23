@@ -122,14 +122,11 @@ smalleditor.directive('smalleditor', [
         var unwantedSelector = unwantedTags.join(',');
 
         // toolbar container
-        var $toolbar = element.find('.smalleditor-toolbar');
+        var $toolbar = angular.element(element[0].querySelector('.smalleditor-toolbar'));
         // content container
-        var $content = element.find('.smalleditor-content');
+        var $content = angular.element(element[0].querySelector('.smalleditor-content'));
         // get body
         var $body = angular.element(document.getElementsByTagName('body'));
-
-        // make content editable
-        $content.attr('contenteditable', true);
 
         // Generate random number
         var generateRandomName = function() {
@@ -181,7 +178,7 @@ smalleditor.directive('smalleditor', [
         };
 
         // get current selection and act on toolbar depending on it
-        var checkSelection = function (e) {
+        scope.checkSelection = function (e) {
           // if you click something from the toolbar don't do anything
           if(e && e.target && $toolbar.find(e.target).length) {
             return false;
@@ -199,12 +196,12 @@ smalleditor.directive('smalleditor', [
 
           // check if selection is in the current editor/directive container
           var parentNode = anchorNode.parentNode;
-          while (parentNode.tagName !== undefined && parentNode !== $content.get(0)) {
+          while (parentNode.tagName !== undefined && parentNode !== $content[0]) {
             parentNode = parentNode.parentNode;
           }
 
           // if the selection is in the current editor
-          if(parentNode === $content.get(0)) {
+          if(parentNode === $content[0]) {
             // show the toolbar
             $timeout(function() {
               if(newSelection.toString().trim() === '' || !anchorNode) {
@@ -225,88 +222,61 @@ smalleditor.directive('smalleditor', [
           return this;
         };
 
-        // Bind selection
-        var bindSelection = function() {
-          // check selection when selecting with the shift key
-          $content.bind('keyup', checkSelection);
-
-          // check the selection on every mouseup
-          // it also triggeres when releasing outside the browser
-          document.addEventListener('mouseup', checkSelection);
-
-          var contentBlurTimer;
-          $content.bind('blur', function() {
-            if(contentBlurTimer) {
-              clearTimeout(contentBlurTimer);
-            }
-            contentBlurTimer = setTimeout(checkSelection, 200);
-          });
-        };
-
         // check current selection styles and activate buttons
         var checkActiveButtons = function () {
           var parentNode = seService.getSelectedParentElement();
           scope.styles = {};
           // Iterate through all parent node and find all styles by its tagName
-          while (parentNode && parentNode.tagName !== undefined && $content.get(0) != parentNode) {
+          while (parentNode && parentNode.tagName !== undefined && $content[0] != parentNode) {
             scope.styles[parentNode.tagName.toLowerCase()] = true;
             parentNode = parentNode.parentNode;
           }
         };
 
         // Placeholder activate
-        var _ph_activate = function(){
-          if ($content.get(0).textContent.replace(/^\s+|\s+$/g, '') === '') {
+        scope._ph_activate = function(){
+          if ($content[0].textContent.replace(/^\s+|\s+$/g, '') === '') {
             scope.showPlaceholder = true;
           }
         };
         // Placeholder deactivate
-        var _ph_deactivate = function(e){
+        scope._ph_deactivate = function(e){
           scope.showPlaceholder = false;
           if (!e || (e.type !== 'keypress' && e.type !== 'paste')) {
             _ph_activate();
           }
         };
 
-        // set placeholders for empty textarea
-        var setPlaceholders = function() {
-          _ph_activate();
-          $content.on('blur.placeholder', _ph_activate)
-            .on('keypress.placeholder paste.placeholder', _ph_deactivate);
-        };
-
-        // Bind paste
-        var bindPaste = function() {
-          $content.on('paste.se_paste', function(e){
-            e.preventDefault();
-            if (!scope.allowPaste) {
-              return false;
-            }
-            var oe = (e.originalEvent || e);
-            if (oe.clipboardData) {
-              if (oe.clipboardData.getData('text/plain') && scope.plainPaste) {
-                var paragraphs = oe.clipboardData.getData('text/plain').split(/[\r\n]/g);
-                var html = "";
-                for (var p = 0; p < paragraphs.length; p += 1) {
-                  if (paragraphs[p].trim() !== '') {
-                    var ep = seUtils.htmlEntities(paragraphs[p].trim());
-                    if (ep) {
-                      if (p === 0) {
-                        html += ep;
-                      } else {
-                        html += '<p name="' + generateRandomName() + '" class="se-elem se-elem--p">' + ep + '</p>';
-                      }
+        // Handle paste
+        scope.handlePaste = function(e) {
+          e.preventDefault();
+          if (!scope.allowPaste) {
+            return false;
+          }
+          var oe = (e.originalEvent || e);
+          if (oe.clipboardData) {
+            if (oe.clipboardData.getData('text/plain') && scope.plainPaste) {
+              var paragraphs = oe.clipboardData.getData('text/plain').split(/[\r\n]/g);
+              var html = "";
+              for (var p = 0; p < paragraphs.length; p += 1) {
+                if (paragraphs[p].trim() !== '') {
+                  var ep = seUtils.htmlEntities(paragraphs[p].trim());
+                  if (ep) {
+                    if (p === 0) {
+                      html += ep;
+                    } else {
+                      html += '<p name="' + generateRandomName() + '" class="se-elem se-elem--p">' + ep + '</p>';
                     }
                   }
                 }
-                if (!!html) {
-                  document.execCommand('insertHTML', false, html);
-                }
-              } else if (oe.clipboardData.getData('text/html') && scope.htmlPaste) {
-                // TODO HTML cleanup and paste
               }
+              if (!!html) {
+                document.execCommand('insertHTML', false, html);
+              }
+            } else if (oe.clipboardData.getData('text/html') && scope.htmlPaste) {
+              // TODO HTML cleanup and paste
             }
-          });
+          }
         };
 
         // Avoid nested block tags
@@ -319,7 +289,7 @@ smalleditor.directive('smalleditor', [
           // Prssing Enter/Deleting in `<blockquote>, <h1>, <h2> ...` generates `p` tags,
           // find closest `.se-elem` element and remove those `p` tags
           // Avoid `p` tag inside `block` tags like `blockquote`, `h1`, `h2`
-          $content.on('keyup.internal_noise, paste.internal_noise, focus.internal_noise', function(){
+          $content.on('keyup, paste, focus', function(){
             $timeout(function(){
               // firefox adds `<br type=_moz></br>`
               $content.find('> br[type=_moz], > br').remove();
@@ -340,13 +310,13 @@ smalleditor.directive('smalleditor', [
 
         // creates named paragraph with class`se-elem se-elem--p`
         var createNamedParagraph = function() {
-          var newP = $('<p>', {
-            name: generateRandomName(),
-            class: 'se-elem se-elem--p'
-          }).appendTo($content);
-          newP.append('<br/>');
-          seService.setCaret(newP.get(0));
+          var newP = document.createElement('p');
+          newP.className = 'se-elem se-elem--p';
+          newP.setAttribute('name', generateRandomName());
 
+          $content[0].appendChild(newP);
+          newP.innerHTML += '<br/>';
+          seService.setCaret(newP);
           addedNewElem();
 
           return newP;
@@ -356,13 +326,13 @@ smalleditor.directive('smalleditor', [
         var bindWrapElements = function() {
           $content.on('blur keyup paste focus', function(){
             // If no `.se-elem` is there, create first paragraph
-            var pList = $content.find('.se-elem');
-            if (pList.size() === 0) {
+            var pList = $content[0].querySelector('.se-elem');
+            if (!pList || pList.length === 0) {
               createNamedParagraph();
             }
 
             // wrap content text in p to avoid firefox problems
-            $content.contents().each((function() {
+            angular.forEach($content.contents(), function(field, index) {
               return function(index, field) {
                 if (field.nodeName === '#text') {
                   document.execCommand('insertHTML',
@@ -372,13 +342,13 @@ smalleditor.directive('smalleditor', [
                   return field.remove();
                 }
               };
-            })(this));
+            });
           });
         };
 
         // Bind create new
         var bindParagraphCreation = function() {
-          $content.on('keyup.paragraph_creation', function(e){
+          $content.on('keyup', function(e){
             // Process only enter key
             if (e.which === 13) {
               if (!e.shiftKey) {
@@ -404,9 +374,11 @@ smalleditor.directive('smalleditor', [
 
         // Setup editor
         var setup = function () {
-          setPlaceholders();
-          bindSelection();
-          bindPaste();
+          scope._ph_activate();
+
+          // placeholder
+          // bindSelection();
+          // bindPaste();
           bindParagraphCreation();
           bindRemoveUnwanted();
           bindWrapElements();

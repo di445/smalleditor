@@ -38,6 +38,14 @@
       <span class="se-down-arrow"></span>
     </div>
   </div>
-  <div class="smalleditor-content" ng-class="{'smalleditor-placeholder': showPlaceholder}" data-placeholder="{{ placeholder }}">
+  <div class="smalleditor-content"
+    contenteditable='true'
+    ng-class="{'smalleditor-placeholder': showPlaceholder}"
+    data-placeholder="{{ placeholder }}"
+    ng-mouseup="checkSelection($event)"
+    ng-blur="_ph_activate($event); checkSelection($event)"
+    ng-keyup="checkSelection($event)"
+    ng-paste="_ph_deactivate($event); handlePaste($event)"
+    ng-keypress="_ph_deactivate($event)">
   </div>
 </div>
