@@ -179,11 +179,6 @@ smalleditor.directive('smalleditor', [
 
         // get current selection and act on toolbar depending on it
         scope.checkSelection = function (e) {
-          // if you click something from the toolbar don't do anything
-          if(e && e.target && $toolbar.find(e.target).length) {
-            return false;
-          }
-
           // get new selection
           var newSelection = window.getSelection();
 
@@ -212,7 +207,7 @@ smalleditor.directive('smalleditor', [
               }
             });
             // check selection styles and active buttons based on it
-            checkActiveButtons();
+            scope.checkActiveButtons();
           } else {
             // hide the toolbar
             $timeout(function() {
@@ -223,7 +218,7 @@ smalleditor.directive('smalleditor', [
         };
 
         // check current selection styles and activate buttons
-        var checkActiveButtons = function () {
+        scope.checkActiveButtons = function () {
           var parentNode = seService.getSelectedParentElement();
           scope.styles = {};
           // Iterate through all parent node and find all styles by its tagName
@@ -281,95 +276,91 @@ smalleditor.directive('smalleditor', [
 
         // Avoid nested block tags
         var removeNested = function() {
-          $content.find('> .se-elem').find(blockSelector).contents().unwrap();
+          var us = angular.element(element[0].querySelectorAll('.smalleditor-content > .se-elem ' + blockSelector));
+          us.replaceWith(us.contents());
         };
 
         // Remove unwanted
-        var bindRemoveUnwanted = function() {
-          // Prssing Enter/Deleting in `<blockquote>, <h1>, <h2> ...` generates `p` tags,
-          // find closest `.se-elem` element and remove those `p` tags
-          // Avoid `p` tag inside `block` tags like `blockquote`, `h1`, `h2`
-          $content.on('keyup, paste, focus', function(){
-            $timeout(function(){
-              // firefox adds `<br type=_moz></br>`
-              $content.find('> br[type=_moz], > br').remove();
-              // chrome adds `<span style="...">text</span>` on backspace
-              $content.find(unwantedSelector).contents().unwrap();
-              $content.find('[style]').removeAttr('style');
-              removeNested();
-            });
+        // Prssing Enter/Deleting in `<blockquote>, <h1>, <h2> ...` generates `p` tags,
+        // find closest `.se-elem` element and remove those `p` tags
+        // Avoid `p` tag inside `block` tags like `blockquote`, `h1`, `h2`
+        scope.removeUnwanted = function() {
+          $timeout(function(){
+            // firefox adds `<br type=_moz></br>`
+            angular.element(element[0].querySelectorAll('.smalleditor-content > br[type=_moz], .smalleditor-content > br')).remove();
+            // chrome adds `<span style="...">text</span>` on backspace
+            var us = angular.element($content[0].querySelectorAll(unwantedSelector));
+            us.replaceWith(us.contents());
+
+            // remove all style on elements
+            angular.element($content[0].querySelectorAll('[style]')).removeAttr('style');
+            removeNested();
           });
         };
 
         // Add first element class on every change
         // TODO why we need this? - remove it
         var addedNewElem = function() {
-          $content.find('.se-elem--first').removeClass('se-elem--first');
-          $content.find('.se-elem').first().addClass('se-elem--first');
+          angular.element($content[0].querySelector('.se-elem--first')).removeClass('se-elem--first');
+          angular.element($content[0].querySelector('.se-elem:first-child')).addClass('se-elem--first');
         };
 
         // creates named paragraph with class`se-elem se-elem--p`
         var createNamedParagraph = function() {
-          var newP = document.createElement('p');
-          newP.className = 'se-elem se-elem--p';
-          newP.setAttribute('name', generateRandomName());
-
-          $content[0].appendChild(newP);
-          newP.innerHTML += '<br/>';
-          seService.setCaret(newP);
+          var newP = angular.element('<p>', {
+            name: generateRandomName(),
+            class: 'se-elem se-elem--p'
+          });
+          newP.append('<br/>');
+          $content.append(newP);
+          seService.setCaret(newP[0]);
           addedNewElem();
 
           return newP;
         };
 
         // Bind wrapping elements
-        var bindWrapElements = function() {
-          $content.on('blur keyup paste focus', function(){
-            // If no `.se-elem` is there, create first paragraph
-            var pList = $content[0].querySelector('.se-elem');
-            if (!pList || pList.length === 0) {
-              createNamedParagraph();
-            }
+        scope.wrapElements = function() {
+          // If no `.se-elem` is there, create first paragraph
+          var pList = $content[0].querySelectorAll('.se-elem');
+          if (!pList || pList.length === 0) {
+            createNamedParagraph();
+          }
 
-            // wrap content text in p to avoid firefox problems
-            angular.forEach($content.contents(), function(field, index) {
-              return function(index, field) {
-                if (field.nodeName === '#text') {
-                  document.execCommand('insertHTML',
-                    false,
-                    "<p name=" + generateRandomName() + " class='se-elem se-elem--p'>" + field.data + "<br/></p>");
-                  addedNewElem();
-                  return field.remove();
-                }
-              };
-            });
+          // wrap content text in p to avoid firefox problems
+          angular.forEach($content.contents(), function(field, index) {
+            if (field.nodeName === '#text') {
+              document.execCommand('insertHTML',
+                false,
+                "<p name=" + generateRandomName() + " class='se-elem se-elem--p'>" + field.data + "<br/></p>");
+              addedNewElem();
+              field.remove();
+            }
           });
         };
 
         // Bind create new
-        var bindParagraphCreation = function() {
-          $content.on('keyup', function(e){
-            // Process only enter key
-            if (e.which === 13) {
-              if (!e.shiftKey) {
-                // Insert `p` tag on enter
-                document.execCommand('formatBlock', false, 'p');
+        scope.paragraphCreation = function(e) {
+          // Process only enter key
+          if (e.which === 13) {
+            if (!e.shiftKey) {
+              // Insert `p` tag on enter
+              document.execCommand('formatBlock', false, 'p');
 
-                // Get closest `.se-elem`, add `name` and `class` to that element.
+              // Get closest `.se-elem`, add `name` and `class` to that element.
 
-                // Enter key on `bold`, `italic` or `underline` elements generates `b` tag
-                // and becomes `<p name='...' class='...'><b>example<b><p>`,
-                // in that case find closest `.se-elem` add name/class attributes
-                var node = seService.getSelectionStart();
-                var closest = $(node).closest('.se-elem');
-                if (closest.size() === 0) {
-                  closest = $(node);
-                }
-                closest.attr('name', generateRandomName()).addClass('se-elem se-elem--p');
-                addedNewElem();
+              // Enter key on `bold`, `italic` or `underline` elements generates `b` tag
+              // and becomes `<p name='...' class='...'><b>example<b><p>`,
+              // in that case find closest `.se-elem` add name/class attributes
+              var node = seService.getSelectionStart();
+              var closest = $(node).closest('.se-elem');
+              if (closest.size() === 0) {
+                closest = $(node);
               }
+              closest.attr('name', generateRandomName()).addClass('se-elem se-elem--p');
+              addedNewElem();
             }
-          });
+          }
         };
 
         // Setup editor
@@ -379,26 +370,28 @@ smalleditor.directive('smalleditor', [
           // placeholder
           // bindSelection();
           // bindPaste();
-          bindParagraphCreation();
-          bindRemoveUnwanted();
-          bindWrapElements();
+          // bindParagraphCreation();
+          // bindRemoveUnwanted();
+          // bindWrapElements();
         };
 
         // simple edit action - bold, italic, underline
         scope.SimpleAction = function(action, elem) {
-          elem = elem && elem.toLowerCase();
-          document.execCommand('styleWithCSS', false, false);
-          document.execCommand(action, false, elem);
-          if (action == 'formatBlock') {
-            var node = seService.getSelectionStart();
-            var closest = $(node).closest(elem);
-            if (closest.size() === 0) {
-              closest = $(node).prev(elem);
+          $timeout(function(){
+            elem = elem && elem.toLowerCase();
+            document.execCommand('styleWithCSS', false, false);
+            document.execCommand(action, false, elem);
+            if (action == 'formatBlock') {
+              var node = seService.getSelectionStart();
+              var closest = $(node).closest(elem);
+              if (closest.size() === 0) {
+                closest = $(node).prev(elem);
+              }
+              closest.attr('name', generateRandomName()).addClass('se-elem se-elem--' + elem);
+              removeNested();
+              addedNewElem();
             }
-            closest.attr('name', generateRandomName()).addClass('se-elem se-elem--' + elem);
-            removeNested();
-            addedNewElem();
-          }
+          });
         };
 
         // move the toolbar to the body,

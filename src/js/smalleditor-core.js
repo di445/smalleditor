@@ -208,8 +208,8 @@ smalleditor.service('SmalleditorCore', function() {
       paragraphs: []
     };
     var dp = dataModel.paragraphs;
-    $content.find('.se-elem').each(function(){
-      var obj = _getParagraphModel($(this));
+    angular.forEach($content[0].querySelectorAll('.se-elem'), function(elem) {
+      var obj = _getParagraphModel(angular.element(elem));
       if (obj) {
         dp.push(obj);
       }

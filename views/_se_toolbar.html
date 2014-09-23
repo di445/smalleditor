@@ -1,5 +1,5 @@
 <div class="smalleditor">
-  <div class="smalleditor-toolbar" style="top: {{ position.top }}px; left: {{ position.left }}px" ng-class="{ 'smalleditor-toolbar--show': showToolbar, 'smalleditor-toolbar--bottom': position.below }">
+  <div class="smalleditor-toolbar" style="top: {{ position.top }}px; left: {{ position.left }}px" ng-class="{ 'smalleditor-toolbar--show': showToolbar, 'smalleditor-toolbar--bottom': position.below }" ng-click="checkActiveButtons()">
     <div class="se-toolbar-inner">
       <ul class="se-main-toolbar">
         <li class="se-li" ng-show="buttons.b">
@@ -43,9 +43,10 @@
     ng-class="{'smalleditor-placeholder': showPlaceholder}"
     data-placeholder="{{ placeholder }}"
     ng-mouseup="checkSelection($event)"
-    ng-blur="_ph_activate($event); checkSelection($event)"
-    ng-keyup="checkSelection($event)"
-    ng-paste="_ph_deactivate($event); handlePaste($event)"
+    ng-blur="_ph_activate($event); checkSelection($event); wrapElements($event)"
+    ng-focus="removeUnwanted($event); wrapElements($event)"
+    ng-keyup="checkSelection($event); paragraphCreation($event); removeUnwanted($event); wrapElements($event)"
+    ng-paste="_ph_deactivate($event); handlePaste($event); removeUnwanted($event); wrapElements($event)"
     ng-keypress="_ph_deactivate($event)">
   </div>
 </div>
