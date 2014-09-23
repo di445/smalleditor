@@ -44,7 +44,7 @@
     data-placeholder="{{ placeholder }}"
     ng-mouseup="checkSelection($event)"
     ng-blur="_ph_activate($event); checkSelection($event); wrapElements($event)"
-    ng-focus="removeUnwanted($event); wrapElements($event)"
+    ng-focus-async="removeUnwanted($event); wrapElements($event)"
     ng-keyup="checkSelection($event); paragraphCreation($event); removeUnwanted($event); wrapElements($event)"
     ng-paste="_ph_deactivate($event); handlePaste($event); removeUnwanted($event); wrapElements($event)"
     ng-keypress="_ph_deactivate($event)">

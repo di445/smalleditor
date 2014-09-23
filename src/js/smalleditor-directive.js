@@ -60,6 +60,22 @@ smalleditor.service('SmalleditorService', function() {
 });
 
 
+// ngFocusAsync directive
+// Angular bug ng-focus with ng-click
+smalleditor.directive('ngFocusAsync', ['$parse', function($parse) {
+  return {
+    compile: function($element, attr) {
+      var fn = $parse(attr.ngFocusAsync);
+      return function(scope, element) {
+        element.on('focus', function(event) {
+          scope.$evalAsync(function() {
+            fn(scope, {$event:event});
+          });
+        });
+      };
+    }
+  };
+}]);
 
 // Define `smalleditor` directive
 smalleditor.directive('smalleditor', [
@@ -377,21 +393,19 @@ smalleditor.directive('smalleditor', [
 
         // simple edit action - bold, italic, underline
         scope.SimpleAction = function(action, elem) {
-          $timeout(function(){
-            elem = elem && elem.toLowerCase();
-            document.execCommand('styleWithCSS', false, false);
-            document.execCommand(action, false, elem);
-            if (action == 'formatBlock') {
-              var node = seService.getSelectionStart();
-              var closest = $(node).closest(elem);
-              if (closest.size() === 0) {
-                closest = $(node).prev(elem);
-              }
-              closest.attr('name', generateRandomName()).addClass('se-elem se-elem--' + elem);
-              removeNested();
-              addedNewElem();
+          elem = elem && elem.toLowerCase();
+          document.execCommand('styleWithCSS', false, false);
+          document.execCommand(action, false, elem);
+          if (action == 'formatBlock') {
+            var node = seService.getSelectionStart();
+            var closest = $(node).closest(elem);
+            if (closest.size() === 0) {
+              closest = $(node).prev(elem);
             }
-          });
+            closest.attr('name', generateRandomName()).addClass('se-elem se-elem--' + elem);
+            removeNested();
+            addedNewElem();
+          }
         };
 
         // move the toolbar to the body,
