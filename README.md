@@ -96,6 +96,37 @@ angular.module('smalleditorDemo', ['ngRoute', 'smalleditor'])
 }]);
 ```
 
+###Utility###
+
+**Bind smalleditor model to div**
+```js
+//
+//  Usage:
+//
+//       <div ng-model="story.content" smalleditor-bind></div>
+//
+//
+angular.module('smalleditor').directive('smalleditorBind', [
+  'SmalleditorCore',
+  function(SmalleditorCore) {
+    return {
+      restrict: 'A',
+      require: '?ngModel',
+      link: function(scope, element, attrs, ngModel) {
+        // Do nothing if no ng-model
+        if(!ngModel) return;
+        // Specify how UI should be updated
+        ngModel.$render = function() {
+          // Generate HTML from model and add it to element
+          element.html(SmalleditorCore.generateHTMLFromModel(ngModel.$viewValue) || "");
+        }
+      }
+    }
+  }
+]);
+
+```
+
 ###LICENSE###
 
 MIT
